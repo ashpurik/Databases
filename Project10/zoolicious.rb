@@ -35,13 +35,32 @@ end
 def print_animals(db)
   puts "Animals"
   animals = db["animals"]
+  habitats = db["habitats"]
   i=1
   animals.find.each do |animal|
     puts "#{i}) #{animal["name"]}"
     puts "  --Description: #{animal["description"]}" unless animal["description"] == nil
     puts "  --Cuteness Level: #{animal["cuteness"]}" unless animal["cuteness"] == nil
+    hab_name = habitats.find_one("_id" => animal["habitat_id"]) unless animal["habitat_id"] == nil
+    puts "  --Habitat: #{hab_name["name"]}" unless hab_name == nil
     i+=1
   end
+end
+
+#store a new animal in database
+def store_animal(db)
+  puts "Store a new animal"
+  puts "Enter animal name: "
+  name = gets.chomp
+  puts "Enter animal description: "
+  desc = gets.chomp
+  cl = -1
+  while cl.to_i < 0
+    puts "Enter cuteness level (cannot be negative): "
+    cl = gets.chomp
+  end
+  animals = db["animals"]
+  animals.insert({name: "#{name}", description: "#{desc}", cuteness: "#{cl}"})
 end
 
 def print_menu
@@ -49,6 +68,7 @@ def print_menu
   puts "A. List zoo names"
   puts "B. List habitats"
   puts "C. List animals"
+  puts "D. Store animal"
   puts "Q. Quit"
 end
 
@@ -64,6 +84,8 @@ def do_command(command, db)
     puts "Exiting. Good-bye"
   when "q"
     puts "Exiting. Good-bye"
+  when "D"
+    store_animal(db)
   else
     puts "Invalid choice."
   end
